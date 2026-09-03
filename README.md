@@ -74,20 +74,6 @@ npm test
 
 ---
 
-## 🔑 Generering av Lisensnøkler (For Eier)
-
-Som eier av prosjektet kan du når som helst generere nye gyldige lisensnøkler til kunder:
-
-```bash
-# Generer 1 lisensnøkkel:
-node generate-key.js
-
-# Generer f.eks. 5 lisensnøkler samtidig:
-node generate-key.js 5
-```
-
----
-
 ---
 
 ## 📥 Installasjonsveiledning for Kunder (Produksjonsfiler)
