@@ -33,14 +33,16 @@ Record your entire display or individual application windows, overlay your webca
 
 ## 💰 Kjøp Lisens / Betalingsmåter
 
-ScreenRec leveres med en **10-minutters gratis prøveperiode**. For å fortsette å bruke programmet ubegrenset etter prøvetiden kan du kjøpe en lisensnøkkel:
+ScreenRec leveres med en **10-minutters gratis prøveperiode**. For å fortsette å bruke programmet ubegrenset etter prøvetiden kan du kjøpe en livstidslisens:
 
-1. 💳 **Kort / Vipps / Apple Pay (Lemon Squeezy)**:
-   - [Kjøp via Lemon Squeezy](https://hollmanrivero.lemonsqueezy.com/checkout)
-2. 🅿️ **PayPal**:
-   - [Betal direkte med PayPal](https://paypal.me/hollmanrivero)
-3. 💬 **Direkte via WhatsApp**:
-   - Send melding til **[+47 972 69 623](https://wa.me/4797269623?text=Hei%20Hollman!%20Jeg%20vil%20kj%C3%B8pe%20lisens%20til%20ScreenRec.)** for direkte kjøp og umiddelbar overlevering av lisensnøkkel.
+1. 🧡 **Vipps (350 kr — Norge)**:
+   - Vipps **350 kr** til **`972 69 623`** (Hollman Rivero).
+   - Skriv inn din e-postadresse i Vipps-meldingen.
+   - Du mottar din personlige lisensnøkkel umiddelbart på SMS/e-post!
+2. 🅿️ **PayPal (€30 EUR — Internasjonalt)**:
+   - Kjøp direkte i appen med ett klikk, eller betal via [paypal.me/hollmanrivero/30EUR](https://paypal.me/hollmanrivero/30EUR).
+3. 💬 **Direkte bestilling via WhatsApp**:
+   - Send melding til **[+47 972 69 623](https://wa.me/4797269623?text=Hei%20Hollman!%20Jeg%20vil%20kj%C3%B8pe%20lisens%20til%20ScreenRec.)** for direkte assistanse og rask overlevering av lisensnøkkel.
 
 ### Slik aktiverer du lisensen i appen:
 1. Klikk på **Prøvetid**-merket øverst i appen (eller vent til betalingsvinduet dukker opp).

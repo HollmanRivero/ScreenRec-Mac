@@ -36,8 +36,10 @@ const modalTrialBox       = document.getElementById('modal-trial-box')
 const modalTrialTimer     = document.getElementById('modal-trial-timer')
 const modalTrialDesc      = document.getElementById('modal-trial-desc')
 const btnStartTrial       = document.getElementById('btn-start-trial')
-const btnPayLemonSqueezy  = document.getElementById('btn-pay-lemonsqueezy')
 const btnPayPayPal        = document.getElementById('btn-pay-paypal')
+const btnPayVipps         = document.getElementById('btn-pay-vipps')
+const vippsInstructions   = document.getElementById('vipps-instructions')
+const btnCopyVipps        = document.getElementById('btn-copy-vipps')
 const btnPayWhatsApp      = document.getElementById('btn-pay-whatsapp')
 const inputLicenseKey     = document.getElementById('input-license-key')
 const btnActivateKey      = document.getElementById('btn-activate-key')
@@ -172,9 +174,22 @@ if (btnCloseModal) {
   })
 }
 
-if (btnPayLemonSqueezy) {
-  btnPayLemonSqueezy.addEventListener('click', () => {
-    ipcRenderer.invoke('open-payment-link', 'lemonsqueezy')
+if (btnPayVipps) {
+  btnPayVipps.addEventListener('click', () => {
+    if (vippsInstructions) {
+      vippsInstructions.classList.toggle('hidden')
+    }
+  })
+}
+
+if (btnCopyVipps) {
+  btnCopyVipps.addEventListener('click', () => {
+    navigator.clipboard.writeText('97269623').then(() => {
+      btnCopyVipps.textContent = 'Kopiert! ✓'
+      setTimeout(() => { btnCopyVipps.textContent = 'Kopier nr: 97269623' }, 2000)
+    }).catch(() => {
+      btnCopyVipps.textContent = 'Nr: 972 69 623'
+    })
   })
 }
 
