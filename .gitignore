@@ -1,0 +1,75 @@
+# ==========================================
+# Dependencies (Never upload to GitHub)
+# ==========================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================================
+# Build Outputs & Packaging Installers
+# ==========================================
+dist/
+build/
+out/
+release/
+*.exe
+*.dmg
+*.AppImage
+*.zip
+*.tar.gz
+*.pkg
+*.deb
+*.rpm
+
+# ==========================================
+# Local Video Recordings & Exports
+# ==========================================
+*.mp4
+*.webm
+*.mov
+*.avi
+*.mkv
+*.webp
+*.gif
+
+# ==========================================
+# Operating System Files
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ==========================================
+# Environment Variables & Secrets
+# ==========================================
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ==========================================
+# IDEs & Text Editors
+# ==========================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+
+# ==========================================
+# Temporary & Diagnostic Files
+# ==========================================
+*.log
+*.tmp
+*.bak
+.claude/
+.gemini/

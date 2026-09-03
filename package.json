@@ -1,0 +1,38 @@
+{
+  "name": "ScreenRec",
+  "version": "1.0.0",
+  "description": "Modern cross-platform desktop screen recorder built with Electron",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HollmanRivero/ScreenRec.git"
+  },
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "electron test-full-user-flow.js",
+    "dist": "electron-builder"
+  },
+  "author": "Hollman Enrique Salazar Rivero <hollman.rivero@smart-things.site>",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^43.3.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.yourcompany.screenrec",
+    "productName": "ScreenRec",
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "category": "public.app-category.utilities",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    }
+  },
+  "dependencies": {
+    "ffmpeg-static": "^5.3.0"
+  }
+}

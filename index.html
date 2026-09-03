@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ScreenRec</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Custom title bar -->
+  <div class="titlebar">
+    <div class="titlebar-left">
+      <div class="app-dot"></div>
+      <span class="app-name">ScreenRec</span>
+    </div>
+    <div class="titlebar-controls">
+      <button id="btn-minimize" title="Minimize">&#8211;</button>
+      <button id="btn-close" title="Close">&#10005;</button>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- Left panel: source picker & settings -->
+    <div class="panel panel-left">
+      
+      <!-- Permission Alert Banner for macOS -->
+      <div id="permission-banner" class="permission-banner hidden">
+        <span>⚠️ Skjermtillatelse kreves</span>
+        <button id="btn-open-settings" class="btn-banner">Innstillinger</button>
+      </div>
+
+      <h2 class="section-title">Hurtigvalg</h2>
+      <div class="quick-modes">
+        <button type="button" class="quick-card" id="btn-mode-screen" data-mode="screen">
+          <span class="quick-icon">🖥️</span>
+          <span class="quick-text">
+            <strong class="quick-title">Bare Skjermen</strong>
+            <small class="quick-desc">Hele skjermen</small>
+          </span>
+        </button>
+
+        <button type="button" class="quick-card" id="btn-mode-combo" data-mode="combo">
+          <span class="quick-icon">🖥️📷</span>
+          <span class="quick-text">
+            <strong class="quick-title">Skjerm + Webcam</strong>
+            <small class="quick-desc">Webcam i hjørnet</small>
+          </span>
+        </button>
+
+        <button type="button" class="quick-card" id="btn-mode-webcam" data-mode="webcam">
+          <span class="quick-icon">📷</span>
+          <span class="quick-text">
+            <strong class="quick-title">Kun Webcam</strong>
+            <small class="quick-desc">Kamera i fullskjerm</small>
+          </span>
+        </button>
+      </div>
+
+      <div class="section-header" style="margin-top:12px">
+        <h2 class="section-title">Eller velg kilde</h2>
+        <button type="button" id="btn-refresh" class="btn-icon" title="Oppdater kilder">&#8635;</button>
+      </div>
+
+      <!-- Source category tabs -->
+      <div class="source-tabs">
+        <button type="button" class="source-tab active" data-filter="all">Alle</button>
+        <button type="button" class="source-tab" data-filter="screen">Skjermer</button>
+        <button type="button" class="source-tab" data-filter="window">Vinduer</button>
+      </div>
+
+      <div id="source-list" class="source-list">
+        <div class="source-placeholder">Laster tilgjengelige vinduer…</div>
+      </div>
+
+      <h2 class="section-title" style="margin-top:12px">Lyd</h2>
+      <label class="toggle-row">
+        <span>Mikrofon</span>
+        <div class="toggle-wrap">
+          <input type="checkbox" id="toggle-mic" checked />
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+      <label class="toggle-row" id="row-desktop-audio">
+        <span>Systemlyd</span>
+        <div class="toggle-wrap">
+          <input type="checkbox" id="toggle-desktop-audio" checked />
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+
+      <h2 class="section-title" style="margin-top:12px">Webcam Overlay</h2>
+      <label class="toggle-row">
+        <span>Webcam i hjørnet</span>
+        <div class="toggle-wrap">
+          <input type="checkbox" id="toggle-cam" />
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+      <label class="toggle-row">
+        <span>Vis forhåndsvisning</span>
+        <div class="toggle-wrap">
+          <input type="checkbox" id="toggle-preview" checked />
+          <span class="toggle-slider"></span>
+        </div>
+      </label>
+
+      <h2 class="section-title" style="margin-top:12px">Format</h2>
+      <div class="format-row">
+        <label for="select-format">Format</label>
+        <select id="select-format">
+          <option value="mp4" selected>MP4 (H.264 + AAC)</option>
+          <option value="webm">WebM (Raskest / Uten konvertering)</option>
+          <option value="mov">MOV (QuickTime)</option>
+          <option value="avi">AVI (H.264 + MP3)</option>
+          <option value="webp">WebP (Animert bilde)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Right panel: preview & controls -->
+    <div class="panel panel-right">
+      <div class="preview-wrap">
+        <video id="preview-screen" autoplay muted playsinline></video>
+        <video id="preview-cam" autoplay muted playsinline class="cam-pip hidden"></video>
+        <div id="preview-placeholder" class="preview-placeholder">
+          <div class="placeholder-icon">&#9654;</div>
+          <p>Klikk på «Bare Skjermen» eller velg et vindu til venstre</p>
+        </div>
+        <div id="rec-badge" class="rec-badge hidden">
+          <span class="rec-dot"></span> OPPTAK
+        </div>
+        <div id="timer" class="timer hidden">00:00</div>
+      </div>
+
+      <div class="controls">
+        <button type="button" id="btn-record" class="btn-record" disabled>
+          <span class="btn-record-icon">&#9679;</span>
+          <span id="btn-record-label">Start Opptak</span>
+        </button>
+        <div id="status" class="status">Ingen kilde valgt</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
