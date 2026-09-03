@@ -13,7 +13,7 @@
     "dist": "electron-builder"
   },
   "author": "Hollman Enrique Salazar Rivero <hollman.rivero@smart-things.site>",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "devDependencies": {
     "electron": "^43.3.0",
     "electron-builder": "^26.15.3"

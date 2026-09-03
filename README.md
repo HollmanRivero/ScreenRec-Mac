@@ -130,10 +130,17 @@ Installers and packaged binaries are placed inside the `dist/` folder.
 
 ---
 
-## 📄 License
+## 📄 License & Terms of Use
 
-This project is licensed under the **MIT License**. You are free to use, modify, distribute, and sell this software, provided that the original copyright notice and permission notice are included in all copies or substantial portions of the software.
+Copyright (c) 2026 **Hollman Enrique Salazar Rivero**. All rights reserved.
 
-See the [LICENSE](LICENSE) file for complete details.
+This software and its source code are proprietary.
 
-Copyright (c) 2026 **Hollman Enrique Salazar Rivero**.
+- ❌ **No Modifications:** You may not modify, alter, adapt, reverse engineer, or create derivative works of this codebase.
+- ❌ **No Resale or Redistribution:** You may not sell, sublicense, rent, redistribute, or commercially exploit this software or any part of its source code without prior explicit written permission from the copyright owner.
+
+See the [LICENSE](LICENSE) file for complete terms.
+
+For commercial licensing, inquiries, or custom features, please contact:
+- 💬 **WhatsApp:** [wa.me/4797269623](https://wa.me/4797269623) (`+47 972 69 623`)
+- 📧 **Email:** [hollman.rivero@smart-things.site](mailto:hollman.rivero@smart-things.site)
