@@ -3,6 +3,8 @@ const path = require('path')
 const fs = require('fs')
 const os = require('os')
 const { execFile } = require('child_process')
+const licenseManager = require('./license-manager')
+const paypalService = require('./paypal-service')
 
 let mainWindow
 let selectedSourceId = null
@@ -151,6 +153,32 @@ ipcMain.handle('open-system-settings', async (_, type) => {
     if (type === 'screen') shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture')
     else if (type === 'camera') shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_Camera')
     else if (type === 'microphone') shell.openExternal('x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone')
+  }
+})
+
+// ── Commercial License & Trial Handlers ──
+ipcMain.handle('get-license-status', () => licenseManager.getStatus())
+ipcMain.handle('activate-license-key', (_, key) => licenseManager.activate(key))
+ipcMain.handle('tick-trial', (_, seconds) => licenseManager.tickTrial(seconds))
+ipcMain.handle('open-payment-link', (_, provider) => licenseManager.openPayment(provider))
+
+ipcMain.handle('start-paypal-checkout', async () => {
+  try {
+    const result = await paypalService.startCheckout(mainWindow)
+    if (result.success) {
+      const activation = licenseManager.generateAndActivateKey()
+      return {
+        success: true,
+        licenseKey: activation.key,
+        orderId: result.orderId,
+        status: licenseManager.getStatus()
+      }
+    } else {
+      return { success: false, canceled: result.canceled }
+    }
+  } catch (err) {
+    console.error('[PayPal Checkout Error]:', err.message)
+    return { success: false, error: err.message }
   }
 })
 

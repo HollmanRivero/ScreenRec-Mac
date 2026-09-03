@@ -25,6 +25,25 @@ const btnClose           = document.getElementById('btn-close')
 const permissionBanner   = document.getElementById('permission-banner')
 const btnOpenSettings    = document.getElementById('btn-open-settings')
 
+// License & Modal Elements
+const licenseBadge        = document.getElementById('license-badge')
+const licenseBadgeIcon    = document.getElementById('license-badge-icon')
+const licenseBadgeText    = document.getElementById('license-badge-text')
+const licenseModal        = document.getElementById('license-modal')
+const modalTitle          = document.getElementById('modal-title')
+const modalSubtitle       = document.getElementById('modal-subtitle')
+const modalTrialBox       = document.getElementById('modal-trial-box')
+const modalTrialTimer     = document.getElementById('modal-trial-timer')
+const modalTrialDesc      = document.getElementById('modal-trial-desc')
+const btnStartTrial       = document.getElementById('btn-start-trial')
+const btnPayLemonSqueezy  = document.getElementById('btn-pay-lemonsqueezy')
+const btnPayPayPal        = document.getElementById('btn-pay-paypal')
+const btnPayWhatsApp      = document.getElementById('btn-pay-whatsapp')
+const inputLicenseKey     = document.getElementById('input-license-key')
+const btnActivateKey      = document.getElementById('btn-activate-key')
+const activationMessage   = document.getElementById('activation-message')
+const btnCloseModal       = document.getElementById('btn-close-modal')
+
 // Ensure muted state is set in JavaScript to bypass Chromium Autoplay restrictions
 if (previewScreen) previewScreen.muted = true
 if (previewCam)    previewCam.muted = true
@@ -45,6 +64,12 @@ let timerInterval       = null
 let elapsedSeconds      = 0
 let compositionCleanup  = null
 
+let licenseStatus = {
+  isActivated: false,
+  isExpired: false,
+  trialRemainingSeconds: 600
+}
+
 // ── Window Controls ──
 if (btnMinimize) btnMinimize.addEventListener('click', () => ipcRenderer.send('minimize-window'))
 if (btnClose)    btnClose.addEventListener('click', () => ipcRenderer.send('close-window'))
@@ -52,6 +77,178 @@ if (btnClose)    btnClose.addEventListener('click', () => ipcRenderer.send('clos
 if (btnOpenSettings) {
   btnOpenSettings.addEventListener('click', () => {
     ipcRenderer.invoke('open-system-settings', 'screen')
+  })
+}
+
+// ── License & Trial UI Logic ──
+function formatTime(seconds) {
+  const m = String(Math.floor(seconds / 60)).padStart(2, '0')
+  const s = String(seconds % 60).padStart(2, '0')
+  return `${m}:${s}`
+}
+
+function updateLicenseUI(status) {
+  if (!status) return
+  licenseStatus = status
+  const rem = status.trialRemainingSeconds || 0
+  const timeStr = formatTime(rem)
+
+  if (status.isActivated) {
+    if (licenseBadge) {
+      licenseBadge.className = 'license-badge pro'
+      licenseBadgeIcon.textContent = '⭐'
+      licenseBadgeText.textContent = 'PRO LISENS'
+      licenseBadge.title = 'Aktiv lisens: Full versjon'
+    }
+    if (modalTrialBox) modalTrialBox.classList.add('hidden')
+    if (modalTitle) modalTitle.textContent = 'ScreenRec Pro (Aktivert)'
+    if (modalSubtitle) modalSubtitle.textContent = 'Du har fullversjon med ubegrenset opptakstid.'
+    if (btnCloseModal) btnCloseModal.classList.remove('hidden')
+  } else if (status.isExpired) {
+    if (licenseBadge) {
+      licenseBadge.className = 'license-badge expired'
+      licenseBadgeIcon.textContent = '🔒'
+      licenseBadgeText.textContent = 'Prøvetid Utløpt'
+      licenseBadge.title = 'Prøveperioden er utløpt — klikk for å kjøpe lisens'
+    }
+    if (modalTrialBox) modalTrialBox.classList.remove('hidden')
+    if (modalTrialTimer) modalTrialTimer.textContent = '00:00'
+    if (modalTrialDesc) modalTrialDesc.textContent = 'Din 10-minutters gratis prøvetid er over. Kjøp eller aktiver en lisens for å fortsette opptak.'
+    if (btnStartTrial) {
+      btnStartTrial.disabled = true
+      btnStartTrial.textContent = 'Prøvetid Utløpt'
+      btnStartTrial.style.opacity = '0.5'
+    }
+    if (btnCloseModal) btnCloseModal.classList.add('hidden')
+    showLicenseModal(true)
+  } else {
+    if (licenseBadge) {
+      licenseBadge.className = 'license-badge trial'
+      licenseBadgeIcon.textContent = '⏳'
+      licenseBadgeText.textContent = `Prøvetid: ${timeStr}`
+      licenseBadge.title = `10-minutters prøvetid: ${timeStr} igjen`
+    }
+    if (modalTrialBox) modalTrialBox.classList.remove('hidden')
+    if (modalTrialTimer) modalTrialTimer.textContent = `${timeStr} igjen`
+    if (btnStartTrial) {
+      btnStartTrial.disabled = false
+      btnStartTrial.textContent = 'Fortsett Prøveperiode'
+      btnStartTrial.style.opacity = '1'
+    }
+    if (btnCloseModal) btnCloseModal.classList.remove('hidden')
+  }
+}
+
+function showLicenseModal(show) {
+  if (!licenseModal) return
+  if (show) {
+    licenseModal.classList.remove('hidden')
+  } else {
+    if (!licenseStatus.isExpired || licenseStatus.isActivated) {
+      licenseModal.classList.add('hidden')
+    }
+  }
+}
+
+// License Badge Click
+if (licenseBadge) {
+  licenseBadge.addEventListener('click', () => showLicenseModal(true))
+}
+
+// Modal Buttons
+if (btnStartTrial) {
+  btnStartTrial.addEventListener('click', () => {
+    if (!licenseStatus.isExpired || licenseStatus.isActivated) {
+      showLicenseModal(false)
+    }
+  })
+}
+
+if (btnCloseModal) {
+  btnCloseModal.addEventListener('click', () => {
+    if (!licenseStatus.isExpired || licenseStatus.isActivated) {
+      showLicenseModal(false)
+    }
+  })
+}
+
+if (btnPayLemonSqueezy) {
+  btnPayLemonSqueezy.addEventListener('click', () => {
+    ipcRenderer.invoke('open-payment-link', 'lemonsqueezy')
+  })
+}
+
+if (btnPayPayPal) {
+  btnPayPayPal.addEventListener('click', async () => {
+    setStatus('Åpner PayPal betaling…')
+    btnPayPayPal.disabled = true
+    try {
+      const res = await ipcRenderer.invoke('start-paypal-checkout')
+      if (res.success) {
+        updateLicenseUI(res.status)
+        if (activationMessage) {
+          activationMessage.className = 'activation-message success'
+          activationMessage.textContent = `🎉 Betaling på €30 EUR fullført! Din lisens: ${res.licenseKey}`
+        }
+        setStatus(`ScreenRec Pro er aktivert! Lisens: ${res.licenseKey}`)
+        setTimeout(() => showLicenseModal(false), 3500)
+      } else if (res.canceled) {
+        setStatus('PayPal betaling avbrutt.')
+      } else {
+        setStatus('PayPal feil: ' + (res.error || 'Kunne ikke fullføre betaling'))
+      }
+    } catch (err) {
+      setStatus('PayPal feil: ' + err.message)
+    } finally {
+      btnPayPayPal.disabled = false
+    }
+  })
+}
+
+if (btnPayWhatsApp) {
+  btnPayWhatsApp.addEventListener('click', () => {
+    ipcRenderer.invoke('open-payment-link', 'whatsapp')
+  })
+}
+
+// Key Activation
+if (btnActivateKey) {
+  btnActivateKey.addEventListener('click', async () => {
+    const key = (inputLicenseKey ? inputLicenseKey.value : '').trim()
+    if (!key) {
+      if (activationMessage) {
+        activationMessage.className = 'activation-message error'
+        activationMessage.textContent = 'Vennligst skriv inn en lisensnøkkel.'
+      }
+      return
+    }
+
+    if (activationMessage) {
+      activationMessage.className = 'activation-message'
+      activationMessage.textContent = 'Sjekker lisensnøkkel…'
+    }
+
+    try {
+      const res = await ipcRenderer.invoke('activate-license-key', key)
+      if (res.success) {
+        if (activationMessage) {
+          activationMessage.className = 'activation-message success'
+          activationMessage.textContent = res.message || 'Lisens aktivert!'
+        }
+        updateLicenseUI(res.status)
+        setTimeout(() => showLicenseModal(false), 1200)
+      } else {
+        if (activationMessage) {
+          activationMessage.className = 'activation-message error'
+          activationMessage.textContent = res.error || 'Ugyldig lisensnøkkel.'
+        }
+      }
+    } catch (err) {
+      if (activationMessage) {
+        activationMessage.className = 'activation-message error'
+        activationMessage.textContent = 'Kunne ikke aktivere: ' + err.message
+      }
+    }
   })
 }
 
@@ -63,7 +260,6 @@ function clearSelection() {
 
 if (btnModeScreen) {
   btnModeScreen.addEventListener('click', async () => {
-    console.log('[UI] Klikket: Bare Skjermen')
     clearSelection()
     btnModeScreen.classList.add('selected')
     toggleCam.checked = false
@@ -77,7 +273,6 @@ if (btnModeScreen) {
 
 if (btnModeCombo) {
   btnModeCombo.addEventListener('click', async () => {
-    console.log('[UI] Klikket: Skjerm + Webcam')
     clearSelection()
     btnModeCombo.classList.add('selected')
     toggleCam.checked = true
@@ -89,7 +284,6 @@ if (btnModeCombo) {
 
 if (btnModeWebcam) {
   btnModeWebcam.addEventListener('click', async () => {
-    console.log('[UI] Klikket: Kun Webcam')
     clearSelection()
     btnModeWebcam.classList.add('selected')
     toggleCam.checked = false
@@ -104,7 +298,6 @@ if (btnModeWebcam) {
 // ── Source Category Tabs ──
 sourceTabs.forEach(tab => {
   tab.addEventListener('click', () => {
-    console.log('[UI] Fane valgt:', tab.dataset.filter)
     sourceTabs.forEach(t => t.classList.remove('active'))
     tab.classList.add('active')
     currentFilter = tab.dataset.filter
@@ -114,7 +307,6 @@ sourceTabs.forEach(tab => {
 
 if (btnRefresh) {
   btnRefresh.addEventListener('click', async () => {
-    console.log('[UI] Klikket: Refresh')
     await loadSources()
   })
 }
@@ -125,7 +317,6 @@ async function loadSources() {
   setStatus('Oppdaterer kildeliste…')
   try {
     allSources = await ipcRenderer.invoke('get-sources')
-    console.log('[RENDERER] Kilder hentet:', allSources.length)
     renderSourceList()
     setStatus(`Fant ${allSources.length} kilder`)
     setTimeout(() => {
@@ -196,7 +387,6 @@ function renderSourceList() {
     item.appendChild(info)
 
     item.addEventListener('click', () => {
-      console.log('[UI] Klikket kilde:', source.name)
       selectSource(source, item)
     })
     sourceList.appendChild(item)
@@ -222,7 +412,6 @@ async function selectEntireScreen() {
     const screenSource = allSources.find(s => s.type === 'screen') || allSources[0]
     selectedSource = screenSource || { id: 'screen:main', name: 'Hele Skjermen', type: 'screen' }
 
-    console.log('[RENDERER] Åpner skjermkilde:', selectedSource.id, selectedSource.name)
     screenStream = await getDesktopStream(selectedSource)
     attachToPreview(screenStream)
     setStatus('Forhåndsvisning: Bare Skjermen')
@@ -241,12 +430,10 @@ async function selectWebcamOnly() {
       camStream.getTracks().forEach(t => t.stop())
       camStream = null
     }
-    console.log('[RENDERER] Ber om tilgang til webcam...')
     camStream = await getCameraStream()
     screenStream = camStream
     selectedSource = { id: 'webcam-only', name: 'Kun Webcam', isWebcam: true }
 
-    console.log('[RENDERER] Webcam åpnet:', camStream.getVideoTracks()[0]?.label)
     attachToPreview(screenStream)
     setStatus('Forhåndsvisning: Kun Webcam')
   } catch (err) {
@@ -265,7 +452,6 @@ async function selectSource(source, itemEl) {
 
   setStatus(`Kobler til: ${source.name}…`)
   try {
-    console.log('[RENDERER] Kobler til kilde:', source.name)
     screenStream = await getDesktopStream(source)
     attachToPreview(screenStream)
     setStatus(`Forhåndsvisning: ${source.name}`)
@@ -279,19 +465,17 @@ async function selectSource(source, itemEl) {
 function attachToPreview(stream) {
   if (!stream) return
   
-  console.log('[RENDERER] Kobler stream til preview element:', stream.getTracks().map(t => t.kind + ':' + t.label))
   previewScreen.muted = true
   previewScreen.srcObject = stream
   previewScreen.style.display = 'block'
   
   const p = previewScreen.play()
   if (p !== undefined) {
-    p.then(() => console.log('[RENDERER] Video play() suksess'))
-     .catch(err => {
-        console.warn('[RENDERER] Preview direct play notice:', err)
-        previewScreen.muted = true
-        previewScreen.play().catch(() => {})
-     })
+    p.catch(err => {
+      console.warn('Preview direct play notice:', err)
+      previewScreen.muted = true
+      previewScreen.play().catch(() => {})
+    })
   }
 
   showPlaceholder(false)
@@ -449,6 +633,14 @@ btnRecord.addEventListener('click', () => {
 
 async function startRecording() {
   if (isStartingRecording || isRecording) return
+
+  // Check license state before starting
+  if (licenseStatus.isExpired && !licenseStatus.isActivated) {
+    showLicenseModal(true)
+    setStatus('Prøvetiden er utløpt — aktiver lisens for å ta opp')
+    return
+  }
+
   if (!selectedSource || !screenStream) {
     setStatus('Velg en kilde først')
     return
@@ -634,15 +826,32 @@ async function saveRecording() {
   }, 3500)
 }
 
-// Timer helpers
+// Timer helpers & Trial Countdown
 function startTimer() {
   elapsedSeconds = 0
   timerEl.textContent = '00:00'
-  timerInterval = setInterval(() => {
+  timerInterval = setInterval(async () => {
     elapsedSeconds++
     const m = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0')
     const s = String(elapsedSeconds % 60).padStart(2, '0')
     timerEl.textContent = `${m}:${s}`
+
+    // Tick trial consumption if not activated
+    if (!licenseStatus.isActivated) {
+      try {
+        const updated = await ipcRenderer.invoke('tick-trial', 1)
+        updateLicenseUI(updated)
+
+        if (updated.isExpired) {
+          console.log('[TRIAL] 10 minutters prøvetid nådd! Stopper opptak.')
+          stopRecording()
+          setStatus('Prøvetiden (10 minutter) er nådd — opptak lagret.')
+          showLicenseModal(true)
+        }
+      } catch (err) {
+        console.warn('Trial tick error:', err)
+      }
+    }
   }, 1000)
 }
 
@@ -658,10 +867,22 @@ function setStatus(msg) {
 // ── Init ──
 async function init() {
   console.log('[APP] Initialiserer...')
+
+  // Load and apply initial license status
+  try {
+    const lic = await ipcRenderer.invoke('get-license-status')
+    updateLicenseUI(lic)
+    // If not activated and first launch or expired, show modal
+    if (lic.isExpired) {
+      showLicenseModal(true)
+    }
+  } catch (err) {
+    console.warn('Could not load license status:', err)
+  }
+
   await loadSources()
   try {
     const perms = await ipcRenderer.invoke('check-permissions')
-    console.log('[APP] Tillatelser:', perms)
     if (perms.screen === 'denied' || perms.screen === 'not-determined') {
       if (permissionBanner) permissionBanner.classList.remove('hidden')
     }

@@ -8,139 +8,174 @@ Record your entire display or individual application windows, overlay your webca
 
 ## 🌟 Key Features
 
-- **Quick 1-Click Modes**:
-  - 🖥️ **Bare Skjermen (Screen Only)** — instantly stream and record your full display.
-  - 🎥 **Skjerm + Webcam (Screen + Camera)** — overlay your webcam directly onto your screen capture with draggable positioning.
-  - 🤳 **Kun Webcam (Webcam Only)** — record directly from your webcam camera as the primary video source.
-- **Source Filtering & Live Thumbnails**:
-  - Filter by **Alle (All)**, **Skjermer (Screens)**, or **Vinduer (Windows)**.
-  - Live window thumbnails and instant refresh (`⟳`) with active status feedback.
-- **Draggable Webcam Overlay (Picture-in-Picture)**:
-  - Reposition your webcam feed anywhere over the preview in real-time.
-  - Rounded corners, clean border accent, and seamless stream composition.
-- **Multi-Track Audio Capture**:
-  - Record voice narration via microphone with echo-cancellation and noise suppression.
-  - Capture desktop/system audio.
-  - Direct low-latency hardware audio routing.
-- **Multi-Format Video Export via Bundled FFmpeg**:
-  - Save directly to **MP4 (H.264/AAC)**, **WebM (VP9/VP8)**, **MOV (QuickTime)**, **AVI**, or **Animated WebP**.
-  - Built-in fallback path resolver with support for bundled `ffmpeg-static`, Homebrew, and system binaries.
-- **Cross-Platform Compatibility**:
-  - **macOS**: ScreenCaptureKit integration, concurrency-safe session caching, and Apple privacy permissions handling.
-  - **Windows**: Full screen, window, webcam, and native loopback audio capture.
-  - **Linux / Ubuntu**: Desktop portal and PipeWire compatibility.
-- **Sleek Frameless Dark UI**:
-  - Custom dark interface with interactive controls, recording timer badge, and window management controls.
+- **10-Minutters Gratis Prøvetid (Free Trial)**:
+  - Test alle funksjoner med opptil 10 minutter aktiv opptakstid før kjøp.
+  - Live nedtelling i topplinjen (`⏳ Prøvetid: 10:00`).
+  - Enkel aktivering med lisensnøkkel (`SCREC-XXXX-XXXX-XXXX`) for å låse opp permanent **PRO-versjon**.
+- **Hurtigvalg (Quick 1-Click Modes)**:
+  - 🖥️ **Bare Skjermen (Screen Only)** — ta opp hele skjermen med ett klikk.
+  - 🎥 **Skjerm + Webcam (Combo Overlay)** — legg webkameraet som et flyttbart bilde-i-bilde over skjermen.
+  - 🤳 **Kun Webcam (Webcam Only)** — ta opp direkte fra webkameraet som hovedkilde.
+- **Kildevalg & Sanntids Miniatyrbilder**:
+  - Filtrer etter **Alle**, **Skjermer**, eller **Vinduer**.
+  - Oppdater kildelisten umiddelbart med roterende `⟳`-knapp.
+- **Flyttbart Webkamera (PiP)**:
+  - Klikk og dra webkameraet til ønsket posisjon hvor som helst over forhåndsvisningen.
+- **Flerkanals Lydopptak**:
+  - Ta opp mikrofonlyd med støydemping og ekkokansellering.
+  - Ta opp system-/skrivebordslyd.
+- **Flere Eksportformater via FFmpeg**:
+  - **MP4** (H.264 + AAC), **WebM** (rask lagring), **MOV** (Apple QuickTime), **AVI**, og **Animert WebP**.
+- **Plattformstøtte**:
+  - Optimalisert for **macOS** (ScreenCaptureKit), **Windows 10/11**, og **Ubuntu / Linux**.
 
 ---
 
-## 📋 Requirements
+## 💰 Kjøp Lisens / Betalingsmåter
 
-- [Node.js](https://nodejs.org/) (version 18 or higher recommended)
-- `npm` (bundled with Node.js)
-- Supported Operating Systems:
-  - **macOS** (macOS 12.3+ recommended for ScreenCaptureKit)
-  - **Windows** (Windows 10 / 11)
-  - **Linux** (Ubuntu 20.04+, Debian, Fedora, Arch)
+ScreenRec leveres med en **10-minutters gratis prøveperiode**. For å fortsette å bruke programmet ubegrenset etter prøvetiden kan du kjøpe en lisensnøkkel:
+
+1. 💳 **Kort / Vipps / Apple Pay (Lemon Squeezy)**:
+   - [Kjøp via Lemon Squeezy](https://hollmanrivero.lemonsqueezy.com/checkout)
+2. 🅿️ **PayPal**:
+   - [Betal direkte med PayPal](https://paypal.me/hollmanrivero)
+3. 💬 **Direkte via WhatsApp**:
+   - Send melding til **[+47 972 69 623](https://wa.me/4797269623?text=Hei%20Hollman!%20Jeg%20vil%20kj%C3%B8pe%20lisens%20til%20ScreenRec.)** for direkte kjøp og umiddelbar overlevering av lisensnøkkel.
+
+### Slik aktiverer du lisensen i appen:
+1. Klikk på **Prøvetid**-merket øverst i appen (eller vent til betalingsvinduet dukker opp).
+2. Skriv inn lisensnøkkelen du mottok ved kjøp (format: `SCREC-XXXX-XXXX-XXXX`).
+3. Klikk **Aktiver**. Merket endrer seg til **⭐ PRO LISENS**, og all tidsbegrensning fjernes permanent.
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Installasjon og Kjøring
 
-### 1. Clone the Repository
-
+### 1. Klon repositoryet
 ```bash
 git clone https://github.com/HollmanRivero/ScreenRec.git
 cd ScreenRec
 ```
 
-### 2. Install Dependencies
-
+### 2. Installer avhengigheter
 ```bash
 npm install
 ```
 
-> **Note:** `node_modules/` is excluded from git via `.gitignore` and is installed locally during this step.
-
-### 3. Launch the Application
-
+### 3. Start appen
 ```bash
 npm start
 ```
 
-### 4. Run Automated End-to-End Tests
-
+### 4. Kjør automatiserte tester
 ```bash
 npm test
 ```
 
-This tests screen and window enumeration, category filters, quick modes, preview streaming, and sample recording generation.
-
 ---
 
-## 📦 Packaging & Distributing
+## 🔑 Generering av Lisensnøkler (For Eier)
 
-Build standalone executable installers for your operating system:
+Som eier av prosjektet kan du når som helst generere nye gyldige lisensnøkler til kunder:
 
 ```bash
-# Build desktop packages for current OS (produces DMG/ZIP on Mac, NSIS on Windows)
-npm run dist
+# Generer 1 lisensnøkkel:
+node generate-key.js
+
+# Generer f.eks. 5 lisensnøkler samtidig:
+node generate-key.js 5
 ```
 
-Installers and packaged binaries are placed inside the `dist/` folder.
+---
 
 ---
 
-## 📖 How to Use
+## 📥 Installasjonsveiledning for Kunder (Produksjonsfiler)
 
-1. **Choose a Mode or Source**:
-   - Click one of the **Hurtigvalg** quick cards (**Bare Skjermen**, **Skjerm + Webcam**, or **Kun Webcam**).
-   - Alternatively, choose a specific window or display under the **Skjermer** or **Vinduer** tabs.
-2. **Adjust Audio & Overlay**:
-   - Toggle **Webcam**, **Webcam preview**, **Mikrofon (Mic)**, or **Systemlyd (Desktop Audio)**.
-   - If the webcam overlay is active, click and drag it to your desired position inside the preview area.
-3. **Select Export Format**:
-   - Pick your desired container format from the dropdown: **MP4**, **WebM**, **MOV**, **AVI**, or **Animated WebP**.
-4. **Record**:
-   - Click **Start Opptak** to begin recording. The live timer and red recording badge will appear.
-5. **Save**:
-   - Click **Stopp Opptak**. A standard system save dialog appears allowing you to select your save destination.
+Last ned riktig installasjonsfil for ditt operativsystem fra [GitHub Releases](https://github.com/HollmanRivero/ScreenRec/releases):
+
+### 🍏 macOS (`.dmg`)
+1. Last ned `ScreenRec-1.0.0.dmg`.
+2. Dobbeltklikk på `.dmg`-filen og dra **ScreenRec** over til **Applications (Programmer)**.
+3. **Viktig første gang på Mac:**
+   - Gå til **Systeminnstillinger ➔ Personvern og sikkerhet ➔ Skjermopptak** og sørg for at ScreenRec er huket av.
+   - Gi tilgang til Kamera og Mikrofon når appen ber om det.
+
+### 🪟 Windows (`.exe`)
+1. Last ned `ScreenRec-Setup-1.0.0.exe`.
+2. Dobbeltklikk på installasjonsfilen for å installere.
+3. Start **ScreenRec** fra skrivebordet eller startmenyen.
+
+### 🐧 Ubuntu / Linux (`.deb` og `.AppImage`)
+
+Ubuntu og andre Linux-distribusjoner krever ofte spesielle grep ved installasjon av tredjeparts `.deb`-pakker. Her er hvordan du løser det:
+
+#### Alternativ 1: `.deb` pakke (Anbefalt via Terminal)
+Ubuntu Software Center blokkerer ofte tredjeparts `.deb`-filer. Bruk Terminalen for en ren installasjon:
+```bash
+# Gå til mappen der du lastet ned filen (f.eks. Downloads):
+cd ~/Downloads
+
+# Installer med apt (dette henter automatisk inn eventuelle manglende avhengigheter):
+sudo apt install ./ScreenRec_1.0.0_amd64.deb
+```
+*Hvis du møter en feil om manglende avhengigheter:*
+```bash
+sudo apt-get install -f
+```
+
+*For Ubuntu 24.04 (AppArmor / User Namespaces restriksjon):*
+Hvis appen ikke åpner på nyeste Ubuntu 24.04:
+```bash
+sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+# Eller kjør appen med:
+screenrec --no-sandbox
+```
+
+#### Alternativ 2: `.AppImage` (Kjører direkte uten installasjon)
+Krever ingen `sudo` eller installasjon:
+```bash
+chmod +x ScreenRec-1.0.0.AppImage
+./ScreenRec-1.0.0.AppImage
+```
 
 ---
 
-## 🛠️ Project Architecture & Tech Stack
+## 📦 Bygg Installatører (For Utvikler)
 
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Runtime** | [Electron](https://www.electronjs.org/) | Cross-platform desktop application framework |
-| **Renderer** | HTML5, CSS3, Modern ES6+ JavaScript | High-performance user interface with zero external UI bloat |
-| **Capture APIs** | `desktopCapturer` + `navigator.mediaDevices` | W3C Display Media and User Media capture pipelines |
-| **Media Mixer** | Canvas 2D Stream Capture + Web Audio API | Live composition of screen and webcam feeds |
-| **Video Processing** | [ffmpeg-static](https://github.com/eugeneware/ffmpeg-static) / FFmpeg | Transcoding and remuxing to MP4, MOV, AVI, and WebP |
-| **Packaging** | [electron-builder](https://www.electron.build/) | Generates production installers (DMG, ZIP, NSIS) |
+Som utvikler kan du bygge ferdige produksjonsfiler:
+
+```bash
+# Bygg for Mac (.dmg og .zip):
+npm run build:mac
+
+# Bygg for Windows (.exe / NSIS installer):
+npm run build:win
+
+# Bygg for Linux (.deb og .AppImage):
+npm run build:linux
+```
+Alle ferdige installatører havner automatisk i mappen **`dist/`**.
 
 ---
 
-## 👤 Project Owner & Maintainer
+## 👤 Eier og Utvikler
 
 **Hollman Enrique Salazar Rivero**
 
 - 💬 **WhatsApp:** [wa.me/4797269623](https://wa.me/4797269623) (`+47 972 69 623`)
-- 📧 **Email:** [hollman.rivero@smart-things.site](mailto:hollman.rivero@smart-things.site)
+- 📧 **E-post:** [hollman.rivero@smart-things.site](mailto:hollman.rivero@smart-things.site)
 
 ---
 
-## 📄 License & Terms of Use
+## 📄 Lisens og Bruksvilkår
 
-Copyright (c) 2026 **Hollman Enrique Salazar Rivero**. All rights reserved.
+Copyright (c) 2026 **Hollman Enrique Salazar Rivero**. Alle rettigheter forbeholdt.
 
-This software and its source code are proprietary.
+Dette programmet er kommersiell programvare (Commercial Trialware):
+- ✅ **10-minutters gratis prøvetid**: Enhver bruker har rett til å evaluere programmet i 10 minutter med aktiv opptakstid.
+- 🔒 **Krav om betalt lisens**: All videre bruk etter prøvetiden krever kjøp av en gyldig lisensnøkkel.
+- ❌ **Forbud mot modifisering**: Det er strengt forbudt å endre, dekompilere, tilpasse eller lage avledede verker av kildekoden eller applikasjonen.
+- ❌ **Forbud mot videresalg**: Det er strengt forbudt å videreselge, leie ut, viderelisensiere eller redistribuere programmet uten skriftlig tillatelse fra opphavsrettsinnehaveren.
 
-- ❌ **No Modifications:** You may not modify, alter, adapt, reverse engineer, or create derivative works of this codebase.
-- ❌ **No Resale or Redistribution:** You may not sell, sublicense, rent, redistribute, or commercially exploit this software or any part of its source code without prior explicit written permission from the copyright owner.
-
-See the [LICENSE](LICENSE) file for complete terms.
-
-For commercial licensing, inquiries, or custom features, please contact:
-- 💬 **WhatsApp:** [wa.me/4797269623](https://wa.me/4797269623) (`+47 972 69 623`)
-- 📧 **Email:** [hollman.rivero@smart-things.site](mailto:hollman.rivero@smart-things.site)
+Se filen [LICENSE](LICENSE) for fullstendige juridiske vilkår.

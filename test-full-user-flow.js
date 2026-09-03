@@ -77,6 +77,16 @@ app.whenReady().then(async () => {
   ipcMain.handle('check-permissions', async () => ({ screen: 'granted', camera: 'granted', mic: 'granted' }))
   ipcMain.handle('request-media-access', async () => true)
 
+  const licenseManager = require('./license-manager')
+  ipcMain.handle('get-license-status', () => licenseManager.getStatus())
+  ipcMain.handle('activate-license-key', (_, key) => licenseManager.activate(key))
+  ipcMain.handle('tick-trial', (_, seconds) => licenseManager.tickTrial(seconds))
+  ipcMain.handle('open-payment-link', (_, provider) => licenseManager.openPayment(provider))
+  ipcMain.handle('start-paypal-checkout', async () => {
+    const activation = licenseManager.generateAndActivateKey()
+    return { success: true, licenseKey: activation.key, orderId: 'MOCK-SANDBOX-12345', status: licenseManager.getStatus() }
+  })
+
   ipcMain.handle('save-recording', async (e, { buffer, format }) => {
     console.log('[MAIN save-recording called] buffer size:', buffer.byteLength, 'format:', format)
     return { success: true, filePath: '/tmp/test-saved-rec.' + format }
@@ -171,6 +181,23 @@ app.whenReady().then(async () => {
     })()
   `)
   console.log('Recording Flow result:', JSON.stringify(recordingFlowResult, null, 2))
+
+  // Step 6: Test License Status and Key Activation
+  console.log('6. Testing License System & Activation...')
+  const licenseTestResult = await win.webContents.executeJavaScript(`
+    (async () => {
+      const initialStatus = await ipcRenderer.invoke('get-license-status');
+      const testActivation = await ipcRenderer.invoke('activate-license-key', 'SCREC-HOLLMAN-PRO-2026');
+      const updatedStatus = await ipcRenderer.invoke('get-license-status');
+      return {
+        initialStatus,
+        activationResult: testActivation.success,
+        activatedKey: testActivation.status?.licenseKey,
+        isProNow: updatedStatus.isActivated
+      };
+    })()
+  `)
+  console.log('License System result:', JSON.stringify(licenseTestResult, null, 2))
 
   console.log('--- ALL INTERACTIVE TESTS COMPLETED ---')
   app.exit(0)

@@ -54,6 +54,8 @@ Desktop.ini
 .env.*.local
 *.pem
 *.key
+paypal-config.json
+credentials.json
 
 # ==========================================
 # IDEs & Text Editors

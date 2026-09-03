@@ -10,7 +10,11 @@
   "scripts": {
     "start": "electron .",
     "test": "electron test-full-user-flow.js",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:all": "electron-builder -mwl"
   },
   "author": "Hollman Enrique Salazar Rivero <hollman.rivero@smart-things.site>",
   "license": "UNLICENSED",
@@ -19,7 +23,7 @@
     "electron-builder": "^26.15.3"
   },
   "build": {
-    "appId": "com.yourcompany.screenrec",
+    "appId": "com.hollmanrivero.screenrec",
     "productName": "ScreenRec",
     "directories": {
       "output": "dist"
@@ -30,6 +34,19 @@
         "dmg",
         "zip"
       ]
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "AppImage"
+      ],
+      "category": "Utility"
     }
   },
   "dependencies": {

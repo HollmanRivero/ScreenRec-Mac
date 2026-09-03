@@ -13,6 +13,10 @@
     <div class="titlebar-left">
       <div class="app-dot"></div>
       <span class="app-name">ScreenRec</span>
+      <div id="license-badge" class="license-badge trial" title="Klikk for lisens og betaling">
+        <span id="license-badge-icon">⏳</span>
+        <span id="license-badge-text">Prøvetid: 10:00</span>
+      </div>
     </div>
     <div class="titlebar-controls">
       <button id="btn-minimize" title="Minimize">&#8211;</button>
@@ -143,6 +147,68 @@
       </div>
     </div>
 
+  </div>
+
+  <!-- Commercial License & Paywall Modal -->
+  <div id="license-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-logo">🎥</div>
+        <h2 id="modal-title">ScreenRec Pro</h2>
+        <p id="modal-subtitle">Fullversjon: Kun <strong>€30 EUR (Livstidslisens)</strong></p>
+      </div>
+
+      <div id="modal-trial-box" class="modal-section trial-box">
+        <div class="trial-header">
+          <span class="trial-tag">10 Minutters Gratis Prøvetid</span>
+          <span id="modal-trial-timer" class="trial-time">10:00 igjen</span>
+        </div>
+        <p id="modal-trial-desc" class="trial-desc">Du har 10 minutter med full tilgang til skjerm-, vindu- og webkameraopptak.</p>
+        <button type="button" id="btn-start-trial" class="btn-primary-large">Fortsett Prøveperiode</button>
+      </div>
+
+      <div class="modal-divider"><span>KJØP LISENS FOR €30 EUR</span></div>
+
+      <div class="payment-options">
+        <button type="button" id="btn-pay-paypal" class="btn-pay paypal featured">
+          <span class="pay-icon">🅿️</span>
+          <div class="pay-text">
+            <strong>Kjøp med PayPal — €30 EUR</strong>
+            <small>Sikker, direkte betaling via PayPal</small>
+          </div>
+          <span class="pay-badge">Anbefalt</span>
+        </button>
+
+        <button type="button" id="btn-pay-lemonsqueezy" class="btn-pay lemonsqueezy">
+          <span class="pay-icon">💳</span>
+          <div class="pay-text">
+            <strong>Kort / Vipps / Apple Pay — €30 EUR</strong>
+            <small>Sikker utsjekk via Lemon Squeezy</small>
+          </div>
+        </button>
+
+        <button type="button" id="btn-pay-whatsapp" class="btn-pay whatsapp">
+          <span class="pay-icon">💬</span>
+          <div class="pay-text">
+            <strong>Bestill direkte på WhatsApp</strong>
+            <small>+47 972 69 623 (Hollman Rivero)</small>
+          </div>
+        </button>
+      </div>
+
+      <div class="activation-section">
+        <label for="input-license-key">Har du allerede kjøpt en lisensnøkkel?</label>
+        <div class="input-group">
+          <input type="text" id="input-license-key" placeholder="SCREC-XXXX-XXXX-XXXX" autocomplete="off" spellcheck="false" />
+          <button type="button" id="btn-activate-key">Aktiver</button>
+        </div>
+        <div id="activation-message" class="activation-message"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="btn-close-modal" class="btn-text-close hidden">Lukk vindu</button>
+      </div>
+    </div>
   </div>
 
   <script src="renderer.js"></script>
