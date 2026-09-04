@@ -86,7 +86,11 @@ async function createWindow() {
           console.error('setDisplayMediaRequestHandler: no source available')
           return callback({})
         }
-        callback({ video: source })
+        const streamConfig = { video: source }
+        if (request && request.audioRequested) {
+          streamConfig.audio = 'loopback'
+        }
+        callback(streamConfig)
       } catch (err) {
         console.error('setDisplayMediaRequestHandler error:', err)
         callback({})
@@ -185,13 +189,13 @@ ipcMain.handle('start-paypal-checkout', async () => {
 ipcMain.handle('save-recording', async (event, { buffer, format }) => {
   const ext = (format || 'mp4').toLowerCase()
   const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
-  const tmpWebm = path.join(os.tmpdir(), `screenrec-${ts}.webm`)
+  const tmpWebm = path.join(os.tmpdir(), `screenrec-src-${ts}.webm`)
   const defaultName = `screenrec-${ts}.${ext}`
 
   try {
     fs.writeFileSync(tmpWebm, Buffer.from(buffer))
   } catch (err) {
-    return { success: false, error: 'Kunne ikke opprette fil: ' + err.message }
+    return { success: false, error: 'Kunne ikke opprette kilde-buffer: ' + err.message }
   }
 
   const filterMap = {
@@ -228,35 +232,88 @@ ipcMain.handle('save-recording', async (event, { buffer, format }) => {
   }
 
   const ffmpegBinary = getFFmpegPath()
+  // Atomic conversion to a temp file first, so filePath is never a corrupt 48-byte stub
+  const tmpOut = path.join(os.tmpdir(), `screenrec-out-${ts}.${chosenExt}`)
+  const isMac = process.platform === 'darwin'
+  const useVideoToolbox = isMac && (chosenExt === 'mp4' || chosenExt === 'mov')
+
   const ffmpegArgs = ['-i', tmpWebm]
 
   if (chosenExt === 'webp') {
     ffmpegArgs.push('-an', '-c:v', 'libwebp', '-quality', '80', '-loop', '0')
   } else {
+    if (useVideoToolbox) {
+      ffmpegArgs.push(
+        '-c:v', 'h264_videotoolbox',
+        '-b:v', '6000k',
+        '-pix_fmt', 'yuv420p'
+      )
+    } else {
+      ffmpegArgs.push(
+        '-c:v', 'libx264',
+        '-preset', 'veryfast',
+        '-pix_fmt', 'yuv420p'
+      )
+    }
+
     ffmpegArgs.push(
-      '-c:v', 'libx264',
-      '-preset', 'fast',
-      '-pix_fmt', 'yuv420p',
       '-c:a', chosenExt === 'avi' ? 'libmp3lame' : 'aac',
       '-b:a', '192k'
     )
+
+    if (chosenExt === 'mp4' || chosenExt === 'mov') {
+      ffmpegArgs.push('-movflags', '+faststart')
+    }
   }
-  ffmpegArgs.push('-y', filePath)
+  ffmpegArgs.push('-y', tmpOut)
 
   return new Promise((resolve) => {
     execFile(ffmpegBinary, ffmpegArgs, (err, _stdout, stderr) => {
-      try { fs.unlinkSync(tmpWebm) } catch {}
       if (err) {
-        console.error('FFmpeg error:', stderr || err.message)
-        const fallbackPath = filePath.replace(/\.[^/.]+$/, '') + '.webm'
-        try {
-          fs.writeFileSync(fallbackPath, Buffer.from(buffer))
-          resolve({ success: true, filePath: fallbackPath, fallbackNotice: 'Lagret som WebM: ' + fallbackPath })
-        } catch {
-          resolve({ success: false, error: stderr || err.message })
+        if (useVideoToolbox) {
+          console.warn('VideoToolbox encoder failed, retrying with libx264 software encoder:', stderr || err.message)
+          const fallbackArgs = [
+            '-i', tmpWebm,
+            '-c:v', 'libx264',
+            '-preset', 'veryfast',
+            '-pix_fmt', 'yuv420p',
+            '-c:a', chosenExt === 'avi' ? 'libmp3lame' : 'aac',
+            '-b:a', '192k',
+            '-movflags', '+faststart',
+            '-y', tmpOut
+          ]
+          execFile(ffmpegBinary, fallbackArgs, (fbErr, _fbStdout, fbStderr) => {
+            try { fs.unlinkSync(tmpWebm) } catch {}
+            if (fbErr) {
+              try { fs.unlinkSync(tmpOut) } catch {}
+              console.error('FFmpeg fallback error:', fbStderr || fbErr.message)
+              resolve({ success: false, error: 'Konvertering feilet: ' + (fbStderr || fbErr.message) })
+            } else {
+              try {
+                fs.copyFileSync(tmpOut, filePath)
+                fs.unlinkSync(tmpOut)
+                resolve({ success: true, filePath })
+              } catch (copyErr) {
+                resolve({ success: false, error: copyErr.message })
+              }
+            }
+          })
+          return
         }
+
+        try { fs.unlinkSync(tmpWebm) } catch {}
+        try { fs.unlinkSync(tmpOut) } catch {}
+        console.error('FFmpeg error:', stderr || err.message)
+        resolve({ success: false, error: 'Konvertering feilet: ' + (stderr || err.message) })
       } else {
-        resolve({ success: true, filePath })
+        try { fs.unlinkSync(tmpWebm) } catch {}
+        try {
+          fs.copyFileSync(tmpOut, filePath)
+          fs.unlinkSync(tmpOut)
+          resolve({ success: true, filePath })
+        } catch (copyErr) {
+          resolve({ success: false, error: copyErr.message })
+        }
       }
     })
   })

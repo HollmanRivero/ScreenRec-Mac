@@ -531,10 +531,18 @@ async function getDesktopStream(source) {
   if (source && source.id) {
     await ipcRenderer.invoke('set-source-id', source.id)
   }
-  return await navigator.mediaDevices.getDisplayMedia({
-    video: { frameRate: { ideal: 30, max: 60 } },
-    audio: false
-  })
+  try {
+    return await navigator.mediaDevices.getDisplayMedia({
+      video: { frameRate: { ideal: 30, max: 60 } },
+      audio: true
+    })
+  } catch (err) {
+    console.warn('getDisplayMedia with audio failed, falling back to video only:', err)
+    return await navigator.mediaDevices.getDisplayMedia({
+      video: { frameRate: { ideal: 30, max: 60 } },
+      audio: false
+    })
+  }
 }
 
 async function getCameraStream() {
@@ -748,9 +756,6 @@ async function startRecording() {
 function stopRecording() {
   if (!mediaRecorder || mediaRecorder.state === 'inactive') return
   mediaRecorder.stop()
-  if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null }
-  if (audioCtx)  { audioCtx.close(); audioCtx = null }
-  if (compositionCleanup) { compositionCleanup(); compositionCleanup = null }
   isRecording = false
 
   btnRecord.classList.remove('recording')
@@ -758,7 +763,7 @@ function stopRecording() {
   recBadge.classList.add('hidden')
   timerEl.classList.add('hidden')
   stopTimer()
-  setStatus('Lagrer opptak…')
+  setStatus('Fullfører opptak…')
 }
 
 // Canvas Stream Mixer
@@ -819,8 +824,22 @@ async function mixStreams() {
 
 // Save recording via IPC
 async function saveRecording() {
+  // Clean up recording tracks safely now that mediaRecorder has flushed all data
+  if (micStream) {
+    micStream.getTracks().forEach(t => t.stop())
+    micStream = null
+  }
+  if (audioCtx) {
+    try { await audioCtx.close() } catch {}
+    audioCtx = null
+  }
+  if (compositionCleanup) {
+    compositionCleanup()
+    compositionCleanup = null
+  }
+
   const outputFormat = selectFormat.value
-  setStatus(`Konverterer til ${outputFormat.toUpperCase()}…`)
+  setStatus(`Klargjør og optimaliserer ${outputFormat.toUpperCase()}…`)
   const blob = new Blob(recordedChunks, { type: 'video/webm' })
   const arrayBuffer = await blob.arrayBuffer()
   

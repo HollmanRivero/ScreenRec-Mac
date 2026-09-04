@@ -87,9 +87,54 @@ app.whenReady().then(async () => {
     return { success: true, licenseKey: activation.key, orderId: 'MOCK-SANDBOX-12345', status: licenseManager.getStatus() }
   })
 
+  const { execFile } = require('child_process')
+  const os = require('os')
+  function getFFmpegPath() {
+    try {
+      let p = require('ffmpeg-static')
+      if (p && fs.existsSync(p)) return p
+    } catch (e) {}
+    return 'ffmpeg'
+  }
+
   ipcMain.handle('save-recording', async (e, { buffer, format }) => {
     console.log('[MAIN save-recording called] buffer size:', buffer.byteLength, 'format:', format)
-    return { success: true, filePath: '/tmp/test-saved-rec.' + format }
+    const ext = (format || 'mp4').toLowerCase()
+    const ts = Date.now()
+    const tmpWebm = path.join(os.tmpdir(), `screenrec-src-${ts}.webm`)
+    const tmpOut = path.join(os.tmpdir(), `screenrec-test-${ts}.${ext}`)
+    const filePath = path.join(os.tmpdir(), `test-saved-rec.${ext}`)
+    fs.writeFileSync(tmpWebm, Buffer.from(buffer))
+
+    const isMac = process.platform === 'darwin'
+    const useVideoToolbox = isMac && (ext === 'mp4' || ext === 'mov')
+    const ffmpegArgs = ['-i', tmpWebm]
+    if (useVideoToolbox) {
+      ffmpegArgs.push('-c:v', 'h264_videotoolbox', '-b:v', '6000k', '-pix_fmt', 'yuv420p')
+    } else {
+      ffmpegArgs.push('-c:v', 'libx264', '-preset', 'veryfast', '-pix_fmt', 'yuv420p')
+    }
+    ffmpegArgs.push('-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', '-y', tmpOut)
+
+    return new Promise((resolve) => {
+      execFile(getFFmpegPath(), ffmpegArgs, (err, stdout, stderr) => {
+        try { fs.unlinkSync(tmpWebm) } catch {}
+        if (err) {
+          console.error('Real test save error:', stderr || err.message)
+          resolve({ success: false, error: stderr || err.message })
+        } else {
+          try {
+            fs.copyFileSync(tmpOut, filePath)
+            fs.unlinkSync(tmpOut)
+            const s = fs.statSync(filePath)
+            console.log('[REAL CONVERSION SUCCEEDED] Saved MP4 path:', filePath, 'size:', s.size)
+            resolve({ success: true, filePath })
+          } catch (cErr) {
+            resolve({ success: false, error: cErr.message })
+          }
+        }
+      })
+    })
   })
 
   await fetchSources()
@@ -170,7 +215,11 @@ app.whenReady().then(async () => {
       console.log('Calling stopRecording()...');
       stopRecording();
       
-      await new Promise(r => setTimeout(r, 1000));
+      for (let i = 0; i < 60; i++) {
+        const s = document.getElementById('status')?.textContent;
+        if (s === 'Opptak lagret!') break;
+        await new Promise(r => setTimeout(r, 200));
+      }
       
       return {
         isRec,
